@@ -21,7 +21,6 @@ interface NodeInterface
      * @return AttrInterface[]
      */
     public function getAttrs(): array;
-
     /**
      * @param NodeInterface[] $children
      * @return void

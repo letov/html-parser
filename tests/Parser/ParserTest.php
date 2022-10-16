@@ -2,9 +2,7 @@
 
 namespace Letov\HtmlParser\Tests\Parser;
 
-use Letov\HtmlParser\Parser\Parser;
 use Letov\HtmlParser\Parser\ParserInterface;
-use Letov\HtmlParser\StateMachine\StateMachine;
 use Letov\HtmlParser\Tests\TestCaseContainer;
 
 class ParserTest extends TestCaseContainer
@@ -23,15 +21,15 @@ class ParserTest extends TestCaseContainer
     }
 
     /*
-<a>
-    text0
-    <b attr />
- 2   <c>
- 0       <d>
-            find-it
-        </d>
-    </c>
-</a>
+    <a>
+        text0
+        <b attr />
+        <c>               2
+            <d>           0
+                find-it
+            </d>
+        </c>
+    </a>
      */
     public function test1(): void
     {
