@@ -10,6 +10,11 @@ class ParserTest extends TestCaseContainer
     public const FILE0 = '../../storage/test0.html';
     public const FILE1 = '../../storage/test1.html';
 
+    /*
+     <a>
+      <tag attr="value" attr2/>
+     </a>
+     */
     public function test0(): void
     {
         $parser = $this->container->get(ParserInterface::class);
@@ -21,15 +26,15 @@ class ParserTest extends TestCaseContainer
     }
 
     /*
-    <a>
+     <a>
         text0
         <b attr />
-        <c>               2
-            <d>           0
+        <c>
+            <d>
                 find-it
             </d>
         </c>
-    </a>
+     </a>
      */
     public function test1(): void
     {

@@ -41,6 +41,11 @@ class StateMachine implements StateMachineInterface
         $this->clear();
     }
 
+    public function getState(): State
+    {
+        return $this->state;
+    }
+
     public function clear(): void
     {
         $this->clearEntities();
@@ -81,6 +86,7 @@ class StateMachine implements StateMachineInterface
             State::ATTR_NAME => $this->processStateAttrName(),
             State::ATTR_VALUE => $this->processStateAttrValue(),
             State::TAG_CLOSE_NAME => $this->processStateTagCloseName(),
+            State::DONE => null,
         };
     }
 
@@ -98,6 +104,18 @@ class StateMachine implements StateMachineInterface
 
         $this->body .= $this->symbol;
         return null;
+    }
+
+    private function dumpNode(): ?NodeInterface
+    {
+        $this->node->setName($this->nodeName);
+        $this->node->setAttrs($this->attrs);
+        $this->checkTextChild();
+        $this->node->setBody($this->body);
+        $this->node->setChildren($this->children);
+        $node = clone $this->node;
+        $this->clearEntities();
+        return $node->isNullNode() ? null : $node;
     }
 
     private function transitionStateTagOpenBegin(): void
@@ -152,18 +170,6 @@ class StateMachine implements StateMachineInterface
         return $this->dumpNode();
     }
 
-    private function dumpNode(): ?NodeInterface
-    {
-        $this->node->setName($this->nodeName);
-        $this->node->setAttrs($this->attrs);
-        $this->checkTextChild();
-        $this->node->setBody($this->body);
-        $this->node->setChildren($this->children);
-        $node = clone $this->node;
-        $this->clearEntities();
-        return $node->isNullNode() ? null : $node;
-    }
-
     private function checkTextChild(): void
     {
         if (1 === count($this->children) && is_null($this->children[0]->getName())) {
@@ -194,18 +200,6 @@ class StateMachine implements StateMachineInterface
         return null;
     }
 
-    private function saveAttr(): void
-    {
-        if ('' !== $this->attrName) {
-            $this->attr->clear();
-            $this->attr->setName($this->attrName);
-            if ('' !== $this->attrValue) {
-                $this->attr->setValue(trim($this->attrValue, '"'));
-            }
-            $this->attrs[] = clone $this->attr;
-        }
-    }
-
     private function transitionStateAttr(): void
     {
         $this->state = State::ATTR;
@@ -226,6 +220,18 @@ class StateMachine implements StateMachineInterface
                 break;
         }
         return null;
+    }
+
+    private function saveAttr(): void
+    {
+        if ('' !== $this->attrName) {
+            $this->attr->clear();
+            $this->attr->setName($this->attrName);
+            if ('' !== $this->attrValue) {
+                $this->attr->setValue(trim($this->attrValue, '"'));
+            }
+            $this->attrs[] = clone $this->attr;
+        }
     }
 
     private function transitionStateAttrName(): void
@@ -307,11 +313,6 @@ class StateMachine implements StateMachineInterface
                 break;
         }
         return null;
-    }
-
-    public function getState(): State
-    {
-        return $this->state;
     }
 
     private function transitionStateDone(): void
