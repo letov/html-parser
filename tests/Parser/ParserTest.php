@@ -7,18 +7,19 @@ use Letov\HtmlParser\Tests\TestCaseContainer;
 
 class ParserTest extends TestCaseContainer
 {
-    public const FILE0 = '../../storage/test0.html';
-    public const FILE1 = '../../storage/test1.html';
+    public const FILE_0 = '../../storage/test0.html';
+    public const FILE_1 = '../../storage/test1.html';
+    public const FILE_2 = '../../storage/test2.html';
 
     /*
-     <a>
-      <tag attr="value" attr2/>
+     <a attr1="http://asd" attr3>
+       <tag attr="value" attr2/>
      </a>
      */
     public function test0(): void
     {
         $parser = $this->container->get(ParserInterface::class);
-        $dom = $parser->parse(self::FILE0);
+        $dom = $parser->parse(self::FILE_0);
         $attrs = $dom[0]->getChildren()[0]->getAttrs();
         $this->assertCount(2, $attrs);
         $this->assertSame('value', $attrs[0]->getValue());
@@ -28,7 +29,7 @@ class ParserTest extends TestCaseContainer
     /*
      <a>
         text0
-        <b attr />
+        <b attr/>
         <c>
             <d>
                 find-it
@@ -39,7 +40,7 @@ class ParserTest extends TestCaseContainer
     public function test1(): void
     {
         $parser = $this->container->get(ParserInterface::class);
-        $dom = $parser->parse(self::FILE1);
+        $dom = $parser->parse(self::FILE_1);
         $d = $dom[0]->getChildren()[2]->getChildren()[0];
         $this->assertSame('d', $d->getName());
         $this->assertSame('find-it', $d->getBody());

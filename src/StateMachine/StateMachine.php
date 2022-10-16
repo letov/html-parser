@@ -12,6 +12,7 @@ class StateMachine implements StateMachineInterface
     private const SYMBOL_WHITESPACE = ' ';
     private const SYMBOL_SLASH = '/';
     private const SYMBOL_EQUAL = '=';
+    private const SYMBOL_QUOTE = '"';
 
     private ?string $parentNodeName;
     private string $symbol;
@@ -85,6 +86,8 @@ class StateMachine implements StateMachineInterface
             State::ATTR =>  $this->processStateAttr(),
             State::ATTR_NAME => $this->processStateAttrName(),
             State::ATTR_VALUE => $this->processStateAttrValue(),
+            State::ATTR_VALUE_NO_QUOTES => $this->processStateAttrValueNoQuotes(),
+            State::ATTR_VALUE_QUOTES => $this->processStateAttrValueQuotes(),
             State::TAG_CLOSE_NAME => $this->processStateTagCloseName(),
             State::DONE => null,
         };
@@ -218,6 +221,8 @@ class StateMachine implements StateMachineInterface
             case self::SYMBOL_CLOSE:
                 $this->transitionStateTagOpenInside();
                 break;
+            case self::SYMBOL_WHITESPACE:
+                break;
             default:
                 $this->transitionStateAttrName();
                 break;
@@ -234,6 +239,7 @@ class StateMachine implements StateMachineInterface
                 $this->attr->setValue(trim($this->attrValue, '"'));
             }
             $this->attrs[] = clone $this->attr;
+            $this->attrName = '';
         }
     }
 
@@ -275,6 +281,22 @@ class StateMachine implements StateMachineInterface
 
     private function processStateAttrValue(): ?NodeInterface
     {
+        if (self::SYMBOL_QUOTE === $this->symbol) {
+            $this->transitionStateAttrValueQuotes();
+        } else {
+            $this->attrValue .= $this->symbol;
+            $this->transitionStateAttrValueNoQuotes();
+        }
+        return null;
+    }
+
+    private function transitionStateAttrValueNoQuotes(): void
+    {
+        $this->state = State::ATTR_VALUE_NO_QUOTES;
+    }
+
+    private function processStateAttrValueNoQuotes(): ?NodeInterface
+    {
         switch ($this->symbol) {
             case self::SYMBOL_SLASH:
                 $this->saveAttr();
@@ -290,6 +312,21 @@ class StateMachine implements StateMachineInterface
             default:
                 $this->attrValue .= $this->symbol;
                 break;
+        }
+        return null;
+    }
+
+    private function transitionStateAttrValueQuotes(): void
+    {
+        $this->state = State::ATTR_VALUE_QUOTES;
+    }
+
+    private function processStateAttrValueQuotes(): ?NodeInterface
+    {
+        if (self::SYMBOL_QUOTE === $this->symbol) {
+            $this->transitionStateAttr();
+        } else {
+            $this->attrValue .= $this->symbol;
         }
         return null;
     }
