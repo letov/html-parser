@@ -99,23 +99,34 @@ class StateMachine implements StateMachineInterface
     {
         if (self::SYMBOL_OPEN === $this->symbol) {
             $this->transitionStateTagOpenBegin();
-            return $this->dumpNode();
+            return $this->saveNode();
         }
 
         $this->body .= $this->symbol;
         return null;
     }
 
-    private function dumpNode(): ?NodeInterface
+    private function saveNode(): ?NodeInterface
     {
         $this->node->setName($this->nodeName);
         $this->node->setAttrs($this->attrs);
-        $this->checkTextChild();
+        $this->checkOnlyTextChild();
         $this->node->setBody($this->body);
         $this->node->setChildren($this->children);
         $node = clone $this->node;
         $this->clearEntities();
         return $node->isNullNode() ? null : $node;
+    }
+
+    private function checkOnlyTextChild(): void
+    {
+        if (
+            1 === count($this->children)
+            && is_null($this->children[0]->getName())
+        ) {
+            $this->body = $this->children[0]->getBody();
+            $this->children = [];
+        }
     }
 
     private function transitionStateTagOpenBegin(): void
@@ -167,15 +178,7 @@ class StateMachine implements StateMachineInterface
     private function processStateTagOpenSingle(): ?NodeInterface
     {
         $this->transitionStateText();
-        return $this->dumpNode();
-    }
-
-    private function checkTextChild(): void
-    {
-        if (1 === count($this->children) && is_null($this->children[0]->getName())) {
-            $this->body = $this->children[0]->getBody();
-            $this->children = [];
-        }
+        return $this->saveNode();
     }
 
     private function transitionStateTagOpenInside(): void
@@ -195,7 +198,7 @@ class StateMachine implements StateMachineInterface
         }
         if (State::DONE === $this->subStateMachine->getState()) {
             $this->transitionStateText();
-            return $this->dumpNode();
+            return $this->saveNode();
         }
         return null;
     }
@@ -304,7 +307,7 @@ class StateMachine implements StateMachineInterface
                 if ($this->nodeName === $this->parentNodeName) {
                     $this->nodeName = null;
                     $this->transitionStateDone();
-                    return $this->dumpNode();
+                    return $this->saveNode();
                 }
                 $this->transitionStateText();
                 break;
