@@ -1,0 +1,30 @@
+{
+  "name": "letov/html-parser",
+  "description": "description",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "ruslan",
+      "email": "ruslan.leto@gmail.com"
+    }
+  ],
+  "require": {
+    "php-di/php-di": "dev-master",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-latest",
+    "phpunit/phpunit": "9.5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Letov\\HtmlParser\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Letov\\HtmlParser\\Tests\\": "tests/"
+    }
+  }
+}
