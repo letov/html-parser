@@ -6,9 +6,10 @@ use Letov\HtmlParser\Node\NodeInterface;
 
 interface ParserInterface
 {
+    public function parse(string $filePath): void;
     /**
-     * @param string $filePath
      * @return NodeInterface[]
      */
-    public function parse(string $filePath): array;
+    public function getDom(): array;
+    public function calcTags(): array;
 }

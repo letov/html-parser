@@ -19,7 +19,8 @@ class ParserTest extends TestCaseContainer
     public function test0(): void
     {
         $parser = $this->container->get(ParserInterface::class);
-        $dom = $parser->parse(self::FILE_0);
+        $parser->parse(self::FILE_0);
+        $dom = $parser->getDom();
         $attrs = $dom[0]->getChildren()[0]->getAttrs();
         $this->assertCount(2, $attrs);
         $this->assertSame('value', $attrs[0]->getValue());
@@ -40,9 +41,19 @@ class ParserTest extends TestCaseContainer
     public function test1(): void
     {
         $parser = $this->container->get(ParserInterface::class);
-        $dom = $parser->parse(self::FILE_1);
+        $parser->parse(self::FILE_1);
+        $dom = $parser->getDom();
         $d = $dom[0]->getChildren()[2]->getChildren()[0];
         $this->assertSame('d', $d->getName());
         $this->assertSame('find-it', $d->getBody());
+    }
+
+
+    public function test2(): void
+    {
+        $parser = $this->container->get(ParserInterface::class);
+        $parser->parse(self::FILE_2);
+        $tags = $parser->calcTags();
+        $this->assertSame(6, $tags['div']);
     }
 }
