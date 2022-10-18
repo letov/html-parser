@@ -48,7 +48,6 @@ class ParserTest extends TestCaseContainer
         $this->assertSame('find-it', $d->getBody());
     }
 
-
     public function test2(): void
     {
         $parser = $this->container->get(ParserInterface::class);
