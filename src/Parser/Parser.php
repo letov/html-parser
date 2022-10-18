@@ -49,6 +49,9 @@ class Parser implements ParserInterface
         return $this->summaryTags;
     }
 
+    /**
+     * @param NodeInterface[] $nodes
+     */
     private function _calcTags(array $nodes): void
     {
         if (empty($nodes)) {
